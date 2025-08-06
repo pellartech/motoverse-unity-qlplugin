@@ -14,7 +14,10 @@
     "plugin",
     "rest",
     "json",
-    "async"
+    "async",
+    "quantum",
+    "leap",
+    "motoverse"
   ],
   "author": {
     "name": "Pellar Team",
@@ -29,5 +32,8 @@
   "bugs": {
     "url": "https://github.com/pellartech/motoverse-unity-qlplugin/issues"
   },
-  "homepage": "https://github.com/pellartech/motoverse-unity-qlplugin#readme"
+  "homepage": "https://github.com/pellartech/motoverse-unity-qlplugin#readme",
+  "samples": [],
+  "documentationUrl": "https://github.com/pellartech/motoverse-unity-qlplugin/wiki",
+  "changelogUrl": "https://github.com/pellartech/motoverse-unity-qlplugin/blob/main/CHANGELOG.md"
 }
