@@ -1,0 +1,33 @@
+{
+  "name": "com.motoverse.qlplugin",
+  "version": "1.0.0",
+  "displayName": "Motoverse Quantum Leap Plugin",
+  "description": "A Unity plugin for fetching data from APIs and logging it with configurable logging system and easy integration.",
+  "unity": "2021.3",
+  "unityRelease": "0b1",
+  "dependencies": {},
+  "keywords": [
+    "api",
+    "http",
+    "logging",
+    "network",
+    "plugin",
+    "rest",
+    "json",
+    "async"
+  ],
+  "author": {
+    "name": "Pellar Team",
+    "email": "hello@pellartech.com",
+    "url": "https://pella.io"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pellartech/motoverse-unity-qlplugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pellartech/motoverse-unity-qlplugin/issues"
+  },
+  "homepage": "https://github.com/pellartech/motoverse-unity-qlplugin#readme"
+}
