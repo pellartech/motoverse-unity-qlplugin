@@ -1,0 +1,21 @@
+{
+  "name": "QLPlugin.Tests.Runtime",
+  "rootNamespace": "QuantumLeap.Tests",
+  "references": [
+    "QLPlugin.Runtime",
+    "UnityEngine.TestRunner",
+    "UnityEditor.TestRunner",
+    "nunit.framework"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "autoReferenced": true,
+  "defineConstraints": [
+    "UNITY_INCLUDE_TESTS"
+  ],
+  "noEngineReferences": false
+}
