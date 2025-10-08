@@ -99,7 +99,7 @@ namespace QuantumLeap
 
                     if (request.result != UnityWebRequest.Result.Success)
                     {
-                        var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries + 1}): {request.error}";
+                        var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
                         QuantumLeapLogger.LogWarning(errorMessage);
 
                         if (currentRetry < _maxRetries)
@@ -126,7 +126,7 @@ namespace QuantumLeap
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries + 1}): {ex.Message}";
+                var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
 
                 if (currentRetry < _maxRetries)
@@ -184,7 +184,7 @@ namespace QuantumLeap
 
                     if (request.result != UnityWebRequest.Result.Success)
                     {
-                        var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries + 1}): {request.error}";
+                        var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
                         QuantumLeapLogger.LogWarning(errorMessage);
 
                         if (currentRetry < _maxRetries)
@@ -211,7 +211,7 @@ namespace QuantumLeap
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries + 1}): {ex.Message}";
+                var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
 
                 if (currentRetry < _maxRetries)
