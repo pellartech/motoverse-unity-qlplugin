@@ -10,8 +10,10 @@ namespace QuantumLeap
 
         public GameEventLog GameEventLog => _gameEventLog;
 
-        public event Action<GameEventLog> OnGameEventLogReceived;
+        public event Action<string, GameEventLog> OnGameEventLogReceived;
         public event Action<string> OnGameEventLogError;
+
+        public readonly string ACTION_LOG_GAME_EVENT = "POST:LogGameEvent";
 
         public override void Initialize()
         {
@@ -27,16 +29,16 @@ namespace QuantumLeap
         public Coroutine LogGameEvent(string eventType, string category, int categoryNumber, string brand, string model, string tokenId, GameEventData eventData)
         {
             var jsonData = GameEventLog.GenerateGameEventLogInput(eventType, category, categoryNumber, brand, model, tokenId, eventData);
-            return StartCoroutine(PostDataCoroutine($"{ApiUrl}/game-studios/events", jsonData));
+            return StartCoroutine(PostDataCoroutine(ACTION_LOG_GAME_EVENT, $"{ApiUrl}/game-studios/events", jsonData));
         }
 
-        private void OnGameEventLogDataReceived(string data)
+        private void OnGameEventLogDataReceived(string action, string data)
         {
             _gameEventLog = GameEventLog.FromJson(data ?? "");
             
             if (_gameEventLog != null)
             {
-                OnGameEventLogReceived?.Invoke(_gameEventLog);
+                OnGameEventLogReceived?.Invoke(action, _gameEventLog);
             }
             else
             {

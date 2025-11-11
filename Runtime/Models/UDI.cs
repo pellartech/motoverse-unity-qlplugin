@@ -108,6 +108,15 @@ namespace QuantumLeap
         }
 
         /// <summary>
+        /// Gets the sequential ID
+        /// </summary>
+        /// <returns>Sequential ID or 0</returns>
+        public int GetSequentialId()
+        {
+            return sequentialId;
+        }
+
+        /// <summary>
         /// Gets the creation date from provenance
         /// </summary>
         /// <returns>Creation date or null</returns>

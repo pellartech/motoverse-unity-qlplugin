@@ -61,7 +61,7 @@ namespace QuantumLeap.Tests
             _component.Initialize();
             bool eventFired = false;
             GameEventLog receivedLog = null;
-            _component.OnGameEventLogReceived += (log) => 
+            _component.OnGameEventLogReceived += (action, log) => 
             {
                 eventFired = true;
                 receivedLog = log;

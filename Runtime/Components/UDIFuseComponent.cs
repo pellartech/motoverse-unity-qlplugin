@@ -10,8 +10,10 @@ namespace QuantumLeap
 
         public UDIFuseResponse CurrentFuseResponse => _currentFuseResponse;
 
-        public event Action<UDIFuseResponse> OnUDIFuseReceived;
+        public event Action<string, UDIFuseResponse> OnUDIFuseReceived;
         public event Action<string> OnUDIFuseError;
+
+        public readonly string ACTION_FUSE_UDI = "POST:FuseUDI";
 
         public override void Initialize()
         {
@@ -34,8 +36,8 @@ namespace QuantumLeap
         /// <param name="rarity">NFT rarity</param>
         /// <param name="attributes">NFT attributes</param>
         /// <returns>Coroutine for the API call</returns>
-        public Coroutine FuseUDI(string udiId, string tokenId, string contractAddress, 
-                                string ownerAddress, string rarity = "common", 
+        public Coroutine FuseUDI(string udiId, string tokenId, string contractAddress,
+                                string ownerAddress, string rarity = "common",
                                 UDIAttribute[] attributes = null)
         {
             if (string.IsNullOrEmpty(udiId))
@@ -93,7 +95,7 @@ namespace QuantumLeap
             string jsonData = fuseRequest.ToJson();
             string endpoint = $"{ApiUrl}/udis/fuse";
 
-            return StartCoroutine(PostDataCoroutine(endpoint, jsonData));
+            return StartCoroutine(PostDataCoroutine(ACTION_FUSE_UDI, endpoint, jsonData));
         }
 
         /// <summary>
@@ -154,7 +156,7 @@ namespace QuantumLeap
             string jsonData = fuseRequest.ToJson();
             string endpoint = $"{ApiUrl}/udis/fuse";
 
-            return StartCoroutine(PostDataCoroutine(endpoint, jsonData));
+            return StartCoroutine(PostDataCoroutine(ACTION_FUSE_UDI, endpoint, jsonData));
         }
 
         /// <summary>
@@ -202,17 +204,17 @@ namespace QuantumLeap
             return true;
         }
 
-        private void OnUDIFuseDataReceived(string data)
+        private void OnUDIFuseDataReceived(string action, string data)
         {
             try
             {
                 // Try to parse as UDIFuseResponse
                 var fuseResponse = UDIFuseResponse.FromJson(data ?? "");
-                
+
                 if (fuseResponse != null && fuseResponse.success)
                 {
                     _currentFuseResponse = fuseResponse;
-                    OnUDIFuseReceived?.Invoke(fuseResponse);
+                    OnUDIFuseReceived?.Invoke(action, fuseResponse);
                     QuantumLeapLogger.Log($"UDI Fuse successful: {fuseResponse.data?.udiId}");
                 }
                 else
