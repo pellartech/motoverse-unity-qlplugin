@@ -16,7 +16,7 @@ namespace QuantumLeap
 
         public static event Action OnInitialized;
 
-        public static event Action<string, object> OnApiResponseReceived;
+        public static event Action<string, string, object> OnApiResponseReceived;
 
         public static event Action<string> OnError;
 
@@ -64,12 +64,12 @@ namespace QuantumLeap
             }
         }
 
-        public static async Task<string> FetchDataAsync(string url, Dictionary<string, string> headers = null)
+        public static async Task<string> FetchDataAsync(string action, string url, Dictionary<string, string> headers = null)
         {
-            return await FetchDataWithRetryAsync(url, headers, 0);
+            return await FetchDataWithRetryAsync(action, url, headers, 0);
         }
 
-        private static async Task<string> FetchDataWithRetryAsync(string url, Dictionary<string, string> headers, int currentRetry)
+        private static async Task<string> FetchDataWithRetryAsync(string action, string url, Dictionary<string, string> headers, int currentRetry)
         {
             if (!_isInitialized)
             {
@@ -99,14 +99,14 @@ namespace QuantumLeap
 
                     if (request.result != UnityWebRequest.Result.Success)
                     {
-                        var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
+                        var errorMessage = $"Failed to fetch data from {action} {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
                         QuantumLeapLogger.LogWarning(errorMessage);
 
                         if (currentRetry < _maxRetries)
                         {
                             QuantumLeapLogger.Log($"Retrying fetch in {_retryDelay} seconds... (attempt {currentRetry + 1}/{_maxRetries})");
                             await Task.Delay((int)(_retryDelay * 1000));
-                            return await FetchDataWithRetryAsync(url, headers, currentRetry + 1);
+                            return await FetchDataWithRetryAsync(action, url, headers, currentRetry + 1);
                         }
                         else
                         {
@@ -118,38 +118,28 @@ namespace QuantumLeap
 
                     var content = request.downloadHandler.text;
 
-                    QuantumLeapLogger.Log($"API Response received from {url}: {content}");
-                    OnApiResponseReceived?.Invoke(url, content);
+                    QuantumLeapLogger.Log($"API Response received from {action} {url}: {content}");
+                    OnApiResponseReceived?.Invoke(action, url, content);
 
                     return content;
                 }
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to fetch data from {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
+                var errorMessage = $"Failed to fetch data from {action} {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
 
-                if (currentRetry < _maxRetries)
-                {
-                    QuantumLeapLogger.Log($"Retrying fetch in {_retryDelay} seconds... (attempt {currentRetry + 1}/{_maxRetries})");
-                    await Task.Delay((int)(_retryDelay * 1000));
-                    return await FetchDataWithRetryAsync(url, headers, currentRetry + 1);
-                }
-                else
-                {
-                    QuantumLeapLogger.LogError($"Max retries ({_maxRetries}) reached for fetch. Giving up.");
-                    OnError?.Invoke(errorMessage);
-                    throw;
-                }
+                OnError?.Invoke(errorMessage);
+                throw;
             }
         }
 
-        public static async Task<string> PostDataAsync(string url, string data, Dictionary<string, string> headers = null)
+        public static async Task<string> PostDataAsync(string action, string url, string data, Dictionary<string, string> headers = null)
         {
-            return await PostDataWithRetryAsync(url, data, headers, 0);
+            return await PostDataWithRetryAsync(action, url, data, headers, 0);
         }
 
-        private static async Task<string> PostDataWithRetryAsync(string url, string data, Dictionary<string, string> headers, int currentRetry)
+        private static async Task<string> PostDataWithRetryAsync(string action, string url, string data, Dictionary<string, string> headers, int currentRetry)
         {
             if (!_isInitialized)
             {
@@ -184,14 +174,14 @@ namespace QuantumLeap
 
                     if (request.result != UnityWebRequest.Result.Success)
                     {
-                        var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
+                        var errorMessage = $"Failed to post data to {action} {url} (attempt {currentRetry + 1}/{_maxRetries}): {request.error}";
                         QuantumLeapLogger.LogWarning(errorMessage);
 
                         if (currentRetry < _maxRetries)
                         {
                             QuantumLeapLogger.Log($"Retrying post in {_retryDelay} seconds... (attempt {currentRetry + 1}/{_maxRetries})");
                             await Task.Delay((int)(_retryDelay * 1000));
-                            return await PostDataWithRetryAsync(url, data, headers, currentRetry + 1);
+                            return await PostDataWithRetryAsync(action, url, data, headers, currentRetry + 1);
                         }
                         else
                         {
@@ -203,29 +193,19 @@ namespace QuantumLeap
 
                     var content = request.downloadHandler.text;
 
-                    QuantumLeapLogger.Log($"POST Response received from {url}: {content}");
-                    OnApiResponseReceived?.Invoke(url, content);
+                    QuantumLeapLogger.Log($"POST Response received from {action} {url}: {content}");
+                    OnApiResponseReceived?.Invoke(action, url, content);
 
                     return content;
                 }
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to post data to {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
+                var errorMessage = $"Failed to post data to {action} {url} (attempt {currentRetry + 1}/{_maxRetries}): {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
 
-                if (currentRetry < _maxRetries)
-                {
-                    QuantumLeapLogger.Log($"Retrying post in {_retryDelay} seconds... (attempt {currentRetry + 1}/{_maxRetries})");
-                    await Task.Delay((int)(_retryDelay * 1000));
-                    return await PostDataWithRetryAsync(url, data, headers, currentRetry + 1);
-                }
-                else
-                {
-                    QuantumLeapLogger.LogError($"Max retries ({_maxRetries}) reached for post. Giving up.");
-                    OnError?.Invoke(errorMessage);
-                    throw;
-                }
+                OnError?.Invoke(errorMessage);
+                throw;
             }
         }
 

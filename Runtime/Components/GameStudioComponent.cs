@@ -9,7 +9,9 @@ namespace QuantumLeap
 
         public GameStudio GameStudio => _gameStudio;
 
-        public event Action<GameStudio> OnGameStudioReceived;
+        public event Action<string, GameStudio> OnGameStudioReceived;
+
+        public readonly string ACTION_GET_GAME_STUDIO_BY_ID = "GET:GetGameStudioById";
 
         public override void Initialize()
         {
@@ -24,16 +26,16 @@ namespace QuantumLeap
 
         public Coroutine GetGameStudioById(string studioId)
         {
-            return StartCoroutine(FetchDataCoroutine($"{ApiUrl}/game-studios/{studioId}"));
+            return StartCoroutine(FetchDataCoroutine(ACTION_GET_GAME_STUDIO_BY_ID, $"{ApiUrl}/game-studios/{studioId}"));
         }
 
-        private void OnGameStudioDataReceived(string data)
+        private void OnGameStudioDataReceived(string action, string data)
         {
             _gameStudio = GameStudio.FromJson(data ?? "");
             
             if (_gameStudio != null)
             {
-                OnGameStudioReceived?.Invoke(_gameStudio);
+                OnGameStudioReceived?.Invoke(action, _gameStudio);
             }
             else
             {

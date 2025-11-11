@@ -23,7 +23,7 @@ namespace QuantumLeap
 
         public event Action OnComponentInitialized;
 
-        public event Action<string> OnDataReceived;
+        public event Action<string, string> OnDataReceived;
 
         public event Action<string> OnErrorOccurred;
 
@@ -113,7 +113,7 @@ namespace QuantumLeap
             }
         }
 
-        protected IEnumerator FetchDataCoroutine(string url)
+        protected IEnumerator FetchDataCoroutine(string action, string url)
         {
             if (!_isInitialized)
             {
@@ -123,7 +123,7 @@ namespace QuantumLeap
 
             var headers = GetHeaders();
 
-            var task = QuantumLeapManager.FetchDataAsync(url, headers);
+            var task = QuantumLeapManager.FetchDataAsync(action, url, headers);
 
             while (!task.IsCompleted)
             {
@@ -132,8 +132,8 @@ namespace QuantumLeap
 
             if (task.Exception != null)
             {
-                QuantumLeapLogger.LogError($"Fetching data from {url} - exception: {task.Exception.Message}");
-                var errorMessage = $"Failed to fetch data from {url}: {task.Exception.Message}";
+                QuantumLeapLogger.LogError($"Fetching data from {action} {url} - exception: {task.Exception.Message}");
+                var errorMessage = $"Failed to fetch data from {action} {url}: {task.Exception.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
                 OnErrorOccurred?.Invoke(errorMessage);
                 yield break;
@@ -142,22 +142,22 @@ namespace QuantumLeap
             try
             {
                 var result = task.Result;
-                OnDataReceived?.Invoke(result);
+                OnDataReceived?.Invoke(action, result);
 
                 if (_logToConsole)
                 {
-                    QuantumLeapLogger.Log($"Data fetched successfully from {url}: {result}");
+                    QuantumLeapLogger.Log($"Data fetched successfully from {action} {url}: {result}");
                 }
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to fetch data from {url}: {ex.Message}";
+                var errorMessage = $"Failed to fetch data from {action} {url}: {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
                 OnErrorOccurred?.Invoke(errorMessage);
             }
         }
 
-        protected IEnumerator PostDataCoroutine(string url, string data)
+        protected IEnumerator PostDataCoroutine(string action, string url, string data)
         {
             if (!_isInitialized)
             {
@@ -167,7 +167,7 @@ namespace QuantumLeap
 
             var headers = GetHeaders();
 
-            var task = QuantumLeapManager.PostDataAsync(url, data, headers);
+            var task = QuantumLeapManager.PostDataAsync(action, url, data, headers);
 
             while (!task.IsCompleted)
             {
@@ -176,7 +176,7 @@ namespace QuantumLeap
 
             if (task.Exception != null)
             {
-                var errorMessage = $"Failed to post data to {url}: {task.Exception.Message}";
+                var errorMessage = $"Failed to post data to {action} {url}: {task.Exception.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
                 OnErrorOccurred?.Invoke(errorMessage);
                 yield break;
@@ -185,16 +185,16 @@ namespace QuantumLeap
             try
             {
                 var result = task.Result;
-                OnDataReceived?.Invoke(result);
+                OnDataReceived?.Invoke(action, result);
 
                 if (_logToConsole)
                 {
-                    QuantumLeapLogger.Log($"Data posted successfully to {url}: {result}");
+                    QuantumLeapLogger.Log($"Data posted successfully to {action} {url}: {result}");
                 }
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Failed to post data to {url}: {ex.Message}";
+                var errorMessage = $"Failed to post data to {action} {url}: {ex.Message}";
                 QuantumLeapLogger.LogError(errorMessage);
                 OnErrorOccurred?.Invoke(errorMessage);
             }
@@ -208,11 +208,11 @@ namespace QuantumLeap
             }
         }
 
-        protected virtual void OnApiResponseReceived(string url, object data)
+        protected virtual void OnApiResponseReceived(string action, string url, object data)
         {
             if (_logToConsole)
             {
-                QuantumLeapLogger.Log($"API response received from {url}: {data}");
+                QuantumLeapLogger.Log($"API response received from {action} {url}: {data}");
             }
         }
 
