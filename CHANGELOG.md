@@ -78,3 +78,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error Handling**: Comprehensive error response handling and user feedback
 - **Request Validation**: Pre-flight validation for all API parameters
 - **Response Parsing**: Automatic JSON parsing with type safety and error recovery
+
+# [1.1.1] - 2025-11-11
+
+#### Changed
+- **UDI Handler**: Add action to callback handler
+- **UDI Creation**: Remove token2049 from url

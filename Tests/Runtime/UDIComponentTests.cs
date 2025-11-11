@@ -205,7 +205,7 @@ namespace QuantumLeap.Tests
             _component.Initialize();
             bool eventFired = false;
             UDI receivedUDI = null;
-            _component.OnUDIReceived += (udi) =>
+            _component.OnUDIReceived += (action, udi) =>
             {
                 eventFired = true;
                 receivedUDI = udi;

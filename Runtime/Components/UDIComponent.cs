@@ -9,8 +9,11 @@ namespace QuantumLeap
         private UDI _currentUDI = null;
         public UDI CurrentUDI => _currentUDI;
 
-        public event Action<UDI> OnUDIReceived;
+        public event Action<string, UDI> OnUDIReceived;
         public event Action<string> OnUDIError;
+
+        public readonly string ACTION_CREATE_UDI = "POST:CreateUDI";
+        public readonly string ACTION_GET_UDI_BY_ID = "GET:GetUDIById";
 
         public override void Initialize()
         {
@@ -64,9 +67,9 @@ namespace QuantumLeap
             };
 
             string jsonData = JsonUtility.ToJson(requestData);
-            string endpoint = $"{ApiUrl}/udis/default/issue/token2049/{email}/{brand}/{model}";
+            string endpoint = $"{ApiUrl}/udis/default/issue/{email}/{brand}/{model}";
 
-            return StartCoroutine(PostDataCoroutine(endpoint, jsonData));
+            return StartCoroutine(PostDataCoroutine(ACTION_CREATE_UDI, endpoint, jsonData));
         }
 
         /// <summary>
@@ -83,7 +86,7 @@ namespace QuantumLeap
             }
 
             string endpoint = $"{ApiUrl}/udis/{udiId}";
-            return StartCoroutine(FetchDataCoroutine(endpoint));
+            return StartCoroutine(FetchDataCoroutine(ACTION_GET_UDI_BY_ID, endpoint));
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace QuantumLeap
             return email.Contains("@") && email.Contains(".") && email.Length > 5;
         }
 
-        private void OnUDIDataReceived(string data)
+        private void OnUDIDataReceived(string action, string data)
         {
             try
             {
@@ -109,7 +112,7 @@ namespace QuantumLeap
                 if (udiResponse != null && udiResponse.success && udiResponse.data != null)
                 {
                     _currentUDI = udiResponse.data;
-                    OnUDIReceived?.Invoke(_currentUDI);
+                    OnUDIReceived?.Invoke(action, _currentUDI);
                     QuantumLeapLogger.Log($"UDI received successfully: {_currentUDI.id}");
                     return;
                 }
@@ -119,7 +122,7 @@ namespace QuantumLeap
 
                 if (_currentUDI != null && !string.IsNullOrEmpty(_currentUDI.id))
                 {
-                    OnUDIReceived?.Invoke(_currentUDI);
+                    OnUDIReceived?.Invoke(action, _currentUDI);
                     QuantumLeapLogger.Log($"UDI received successfully: {_currentUDI.id}");
                     return;
                 }
@@ -172,7 +175,7 @@ namespace QuantumLeap
             return _currentUDI != null;
         }
 
-        
+
 
         /// <summary>
         /// Gets the current UDI's brand
@@ -190,6 +193,15 @@ namespace QuantumLeap
         public string GetCurrentModel()
         {
             return _currentUDI?.GetModel() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Gets the current UDI's sequential ID
+        /// </summary>
+        /// <returns>Sequential ID or 0</returns>
+        public int GetCurrentSequentialId()
+        {
+            return _currentUDI?.GetSequentialId() ?? 0;
         }
 
         /// <summary>

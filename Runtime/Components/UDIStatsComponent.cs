@@ -10,8 +10,10 @@ namespace QuantumLeap
 
         public UDIStats CurrentUDIStats => _currentUDIStats;
 
-        public event Action<UDIStats> OnUDIStatsReceived;
+        public event Action<string, UDIStats> OnUDIStatsReceived;
         public event Action<string> OnUDIStatsError;
+
+        public readonly string ACTION_GET_UDI_STATS = "GET:GetUDIStats";
 
         public override void Initialize()
         {
@@ -53,10 +55,10 @@ namespace QuantumLeap
             }
 
             string endpoint = $"{ApiUrl}/udis/default/{brand}/{model}/{sequentialId}/stats";
-            return StartCoroutine(FetchDataCoroutine(endpoint));
+            return StartCoroutine(FetchDataCoroutine(ACTION_GET_UDI_STATS, endpoint));
         }
 
-        private void OnUDIStatsDataReceived(string data)
+        private void OnUDIStatsDataReceived(string action, string data)
         {
             try
             {
@@ -66,7 +68,7 @@ namespace QuantumLeap
                 if (udiStatsResponse != null && udiStatsResponse.success && udiStatsResponse.data != null)
                 {
                     _currentUDIStats = udiStatsResponse.data;
-                    OnUDIStatsReceived?.Invoke(_currentUDIStats);
+                    OnUDIStatsReceived?.Invoke(action, _currentUDIStats);
                     QuantumLeapLogger.Log($"UDI Stats received successfully: {_currentUDIStats.brand} {_currentUDIStats.model}");
                     return;
                 }
@@ -76,7 +78,7 @@ namespace QuantumLeap
 
                 if (_currentUDIStats != null)
                 {
-                    OnUDIStatsReceived?.Invoke(_currentUDIStats);
+                    OnUDIStatsReceived?.Invoke(action, _currentUDIStats);
                     QuantumLeapLogger.Log($"UDI Stats received successfully: {_currentUDIStats.brand} {_currentUDIStats.model}");
                     return;
                 }
